@@ -105,17 +105,12 @@
       width: 140px;
     }
 
-    .focused {
-      border-color: transparent !important;
-      transform: none !important;
-      z-index: auto !important;
-    }
+   .item.focused img {
+  outline: 3px solid #e50914;
+  outline-offset: -3px;
+  z-index: 10;
+}
 
-    .item.focused img {
-      transform: scale(1.05);
-      box-shadow: 0 0 0 3px #e50914, 0 0 8px 4px #e50914;
-      z-index: 10;
-    }
   </style>
 </head>
 <body>

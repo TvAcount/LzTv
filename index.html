@@ -224,14 +224,19 @@
     case "ArrowRight": move("right"); break;
     case "ArrowUp": move("up"); break;
     case "ArrowDown": move("down"); break;
-    case "Enter":
-      if (isOnSearch) {
-        window.location.href = document.getElementById("searchLink").href;
-      } else {
-        var current = rows[currentRow].querySelectorAll(".item")[currentItem[currentRow]];
-        alert("Seleccionaste esta película: " + current.querySelector(".name").textContent);
-      }
-      break;
+  case "Enter":
+  if (isOnSearch) {
+    window.location.href = document.getElementById("searchLink").href;
+  } else {
+    var current = rows[currentRow].querySelectorAll(".item")[currentItem[currentRow]];
+    var link = current.querySelector("a");
+    if (link) {
+      window.location.href = link.href;
+    } else {
+      alert("Sin enlace: " + current.querySelector(".name").textContent);
+    }
+  }
+  break;
   }
 });
 

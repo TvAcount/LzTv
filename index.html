@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LzTV App</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: sans-serif;
+      overflow-x: hidden;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 0px 0px;
+    }
+
+   .search-icon {
+  color: white;
+  font-size: 30px;
+  cursor: pointer;
+  outline: none;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.search-icon.focused {
+  background-color: #333333aa; /* gris claro semitransparente */
+  color: #fff;
+}
+
+    h2 {
+      margin: 20px 0 10px 20px;
+      font-size: 24px;
+    }
+
+    .row {
+      display: flex;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      margin-bottom: 30px;
+      padding-left: 20px;
+      gap: 10px;
+    }
+
+    .row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .item {
+      flex: 0 0 auto;
+      border: 3px solid transparent;
+      outline: none;
+      cursor: pointer;
+      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: fit-content;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .item img {
+      display: block;
+      border-radius: 0;
+      user-select: none;
+      pointer-events: none;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .horizontal .item img {
+      width: 300px;
+      height: 170px;
+    }
+
+    .vertical .item img {
+      width: 140px;
+      height: 210px;
+    }
+
+    .name {
+      margin-top: 6px;
+      font-size: 14px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #fff;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .horizontal .item .name {
+      width: 300px;
+    }
+
+    .vertical .item .name {
+      width: 140px;
+    }
+
+    .focused {
+      border-color: transparent !important;
+      transform: none !important;
+      z-index: auto !important;
+    }
+
+    .item.focused img {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 3px #e50914, 0 0 8px 4px #e50914;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+  <a href="buscador.html" id="searchLink">
+    <i class="fas fa-search search-icon" tabindex="0" id="searchIcon" title="Buscar"></i>
+  </a>
+</div>
+
+
+  <h2>Recomendadas para ti</h2>
+  <div class="row horizontal" id="row1">
+    <div class="item focused" tabindex="0">
+      <img src="https://image.tmdb.org/t/p/original/2pmWrjN12nwe1YHgGgv52n0ouvX.jpg" alt="Rápidos y Furiosos 10">
+      <div class="name">Rápidos y Furiosos 10</div>
+    </div>
+    <div class="item" tabindex="0">
+      <img src="https://image.tmdb.org/t/p/original/Aj0umGs0heNJ4VKtkaRQWeg6Tyx.jpg" alt="Avatar: El camino del agua">
+      <div class="name">Avatar: El camino del agua</div>
+    </div>
+    <div class="item" tabindex="0">
+      <img src="https://image.tmdb.org/t/p/original/GBr1ozQf7WZqSMwNPdb5Xs2eyn.jpg" alt="El gato con botas: El último deseo">
+      <div class="name">El gato con botas: El último deseo</div>
+    </div>
+  </div>
+
+  <h2>Películas populares</h2>
+  <div class="row vertical" id="row2">
+    <div class="item" tabindex="0">
+      <img src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/ckfiXWGEMWrUP53cc6QyHijLlhl.jpg" alt="Guardianes de la Galaxia Vol. 3">
+      <div class="name">Guardianes de la Galaxia Vol. 3</div>
+    </div>
+    <div class="item" tabindex="0">
+      <img src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/6N21gcFbhT4ocdTU4MGREAaM5Vz.jpg" alt="La Sirenita: Live Action">
+      <div class="name">La Sirenita: Live Action</div>
+    </div>
+    <div class="item" tabindex="0">
+      <img src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/9Zr7ZyiMpgMhhxJQi1tQJp9LGho.jpg" alt="John Wick: Capítulo 4">
+      <div class="name">John Wick: Capítulo 4</div>
+    </div>
+  </div>
+
+  <script>
+    var rows = document.querySelectorAll(".row");
+    var currentRow = 0;
+    var currentItem = [];
+    var searchIcon = document.getElementById("searchIcon");
+    var isOnSearch = false;
+
+    rows.forEach((row, i) => currentItem[i] = 0);
+
+    function updateFocus() {
+      rows.forEach((row, rowIndex) => {
+        var items = row.querySelectorAll(".item");
+        items.forEach((item, itemIndex) => {
+          item.classList.toggle("focused", !isOnSearch && rowIndex === currentRow && itemIndex === currentItem[rowIndex]);
+          item.tabIndex = (!isOnSearch && rowIndex === currentRow && itemIndex === currentItem[rowIndex]) ? 0 : -1;
+        });
+      });
+      searchIcon.classList.toggle("focused", isOnSearch);
+    }
+
+    function move(direction) {
+      if (isOnSearch) {
+        if (direction === "down") {
+          isOnSearch = false;
+          updateFocus();
+        }
+        return;
+      }
+
+      var items = rows[currentRow].querySelectorAll(".item");
+
+      if (direction === "left" && currentItem[currentRow] > 0) {
+        currentItem[currentRow]--;
+      } else if (direction === "right" && currentItem[currentRow] < items.length - 1) {
+        currentItem[currentRow]++;
+      } else if (direction === "up") {
+        if (currentRow > 0) {
+          currentRow--;
+        } else {
+          isOnSearch = true;
+        }
+      } else if (direction === "down" && currentRow < rows.length - 1) {
+        currentRow++;
+      }
+
+      let newItems = rows[currentRow].querySelectorAll(".item");
+      scrollIntoViewIfNeeded(newItems[currentItem[currentRow]], rows[currentRow]);
+      updateFocus();
+    }
+
+    function scrollIntoViewIfNeeded(el, container) {
+      const elRect = el.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      if (elRect.right > containerRect.right) {
+        container.scrollLeft += elRect.right - containerRect.right + 10;
+      } else if (elRect.left < containerRect.left) {
+        container.scrollLeft -= containerRect.left - elRect.left + 10;
+      }
+    }
+
+   document.addEventListener("keydown", function(e) {
+  switch (e.key) {
+    case "ArrowLeft": move("left"); break;
+    case "ArrowRight": move("right"); break;
+    case "ArrowUp": move("up"); break;
+    case "ArrowDown": move("down"); break;
+    case "Enter":
+      if (isOnSearch) {
+        window.location.href = document.getElementById("searchLink").href;
+      } else {
+        var current = rows[currentRow].querySelectorAll(".item")[currentItem[currentRow]];
+        alert("Seleccionaste esta película: " + current.querySelector(".name").textContent);
+      }
+      break;
+  }
+});
+
+    updateFocus();
+  </script>
+
+</body>
+</html>
